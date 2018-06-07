@@ -35,9 +35,6 @@ def main():
         for stopword in stopwords:
             stopword_set.add(stopword.strip('\n'))
 
-    with open('{x}'.format(x = file_name), 'r') as in_file:
-        lines = in_file.read().splitlines()
-
     tot_line_num = len(open(file_name).readlines())
     output = open('{y}/{x}'.format(x = abs_file_name+'.segmentated', y = out_dir), 'w', encoding='utf-8')
     with open('{x}'.format(x = file_name), 'r', encoding='utf-8') as content:
