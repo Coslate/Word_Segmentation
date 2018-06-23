@@ -23,15 +23,22 @@ import os
 def main():
     prev_prec_percent = 0
     tot_line_num = 0
-    (file_name, out_dir, verbose) = ArgumentParser()
+    (file_name, out_dir, verbose, stop_file) = ArgumentParser()
     abs_file_name = basename(file_name)
+    if(stop_file == ""):
+        stop_file = 'stopword_lib/stopwords.txt'
+    if(verbose):
+        print(f'stop_file = {stop_file}')
 
     # jieba set traditional chinese dictionary
     jieba.set_dictionary("trad_word_lib/dict.txt.big")
 
+    # jieba set self-defined dictionary
+    jieba.load_userdict("trad_word_lib/self_defined.txt.big")
+
     # load stopwords set
     stopword_set = set()
-    with open('stopword_lib/stopwords.txt','r', encoding='utf-8') as stopwords:
+    with open('{}'.format(stop_file),'r', encoding='utf-8') as stopwords:
         for stopword in stopwords:
             stopword_set.add(stopword.strip('\n'))
 
@@ -57,13 +64,15 @@ def main():
 #########################
 def ArgumentParser():
     file_name = ""
-    out_dir   = ""
+    out_dir   = "."
     verbose   = 0
+    stop_file = ""
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--file_name", "-file", help="The name of the file to do the preprocessing.")
-    parser.add_argument("--out_dir", "-odir", help="The name of the file to do the preprocessing.")
-    parser.add_argument("--verbose", "-verb", help="The name of the file to do the preprocessing.")
+    parser.add_argument("--file_name" , "-file"          , help="The name of the file to do the preprocessing.")
+    parser.add_argument("--out_dir"   , "-odir"          , help="The output directory of the word segmentation result.")
+    parser.add_argument("--stop_file" , "-stop_word_file", help="The stop word file. Default is ./stopword_lib/stopwords.txt")
+    parser.add_argument("--verbose"   , "-verb"          , help="Set 1 to print detailed messages.")
 
     args = parser.parse_args()
     if args.file_name:
@@ -75,7 +84,10 @@ def ArgumentParser():
     if args.verbose:
         verbose = int(args.verbose)
 
-    return (file_name, out_dir, verbose)
+    if args.stop_file:
+        stop_file = args.stop_file
+
+    return (file_name, out_dir, verbose, stop_file)
 
 if __name__ == '__main__':
     main()
